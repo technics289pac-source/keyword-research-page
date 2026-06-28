@@ -454,8 +454,16 @@
 
     const knownMap = {
       "Fujitsu": "富士通",
+      "FUJITSU": "富士通",
       "ScanSnap": "スキャンスナップ",
+      "ImageScanner": "イメージスキャナー",
+      "LIFEBOOK": "ライフブック",
+      "Arrows": "アローズ",
+      "arrows": "アローズ",
+      "FM TOWNS": "FM TOWNS",
+      "MARTY": "マーティー",
       "Ricoh": "リコー",
+      "RICOH": "リコー",
       "Canon": "キヤノン",
       "Nikon": "ニコン",
       "Sony": "ソニー",
@@ -475,6 +483,7 @@
       "Hello Kitty": "ハローキティ",
       "Sanrio": "サンリオ",
       "Shure": "シュア",
+      "SHURE": "シュア",
       "Audio-Technica": "オーディオテクニカ",
       "Technics": "テクニクス",
       "LEGO": "レゴ",
@@ -493,12 +502,25 @@
       "RICOH": "Fujitsu/Ricoh併記品。検索目的により要確認"
     };
 
+    const knownBrands = new Set([
+      "fujitsu", "scansnap", "ricoh", "canon", "nikon", "sony", "panasonic", "casio",
+      "seiko", "citizen", "shure", "audio-technica", "technics", "lego", "bandai",
+      "tamiya", "nintendo", "sanrio"
+    ]);
+
+    const knownCharacters = new Set([
+      "pokemon", "pokémon", "one piece", "dragon ball", "naruto", "demon slayer",
+      "jujutsu kaisen", "hatsune miku", "miku", "hello kitty", "gundam", "disney"
+    ]);
+
     const stopWords = new Set([
       "the", "and", "with", "for", "from", "japan", "used", "new", "tested", "working", "authentic",
       "rare", "mint", "excellent", "condition", "free", "shipping", "set", "lot", "w", "box", "manual",
       "limited", "edition", "original", "official", "vintage", "black", "white", "red", "blue", "silver",
       "gold", "green", "yellow", "pink", "brown", "gray", "grey", "no", "case", "power", "adapter",
-      "cable", "ac", "model", "japanese", "version", "unlocked", "docomo", "softbank", "au"
+      "cable", "ac", "model", "japanese", "version", "unlocked", "docomo", "softbank", "au",
+      "document", "scanner", "network", "duplex", "touchscreen", "wireless", "high", "speed",
+      "color", "image", "phone", "tablet", "laptop", "notebook", "computer", "cartridge", "needle"
     ]);
 
     const titleFields = ["タイトル", "Title", "title", "Item title", "Item Title", "商品名", "名前"];
@@ -593,7 +615,18 @@
         .forEach(([en, ja]) => {
           jp = jp.replace(new RegExp(escapeRegExp(en), "ig"), ja);
         });
-      return jp;
+      return cleanupJapaneseKeyword(jp);
+    }
+
+    function cleanupJapaneseKeyword(text) {
+      return String(text || "")
+        .replace(/\b(Document|Scanner|Network|Duplex|Touchscreen|Wireless|High|Speed|Color|Image|Working|Condition|Japan|Used|Tested|Adapter|Cable|Unlocked|Model|White|Black|Red|Blue|Silver|Gold)\b/gi, "")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function isModelLike(text) {
+      return /^(?:[A-Z]{1,6}[- ]?[A-Z]{0,3}\d{1,5}[A-Z0-9]*(?:-[A-Z0-9]+)*|\d{3,5}[A-Z]{0,3}[- ][A-Z0-9]{1,8}|iX\d{3,4}|FI[- ]?[A-Z0-9-]+|F[- ]?\d{2}[A-Z]?|U\d{3,4}[A-Z/-]*)$/i.test(String(text || "").trim());
     }
 
     function escapeRegExp(text) {
@@ -618,7 +651,7 @@
       const modelPatterns = [
         /\b[A-Z]{1,5}[- ]?[A-Z]?\d{2,5}[A-Z0-9-]*\b/g,
         /\b\d{3,5}[A-Z]{0,3}[- ][A-Z0-9]{1,6}\b/g,
-        /\b[A-Z][a-z]+(?:\s+[A-Z0-9][A-Za-z0-9-]+){0,3}\s+(?:Vol\.?\s*\d+|TAG\s*\d+|M\d{2,4}[A-Z-]*|iX\d{3,4})\b/g
+        /\b(?:Vol\.?\s*\d+|TAG\s*\d+|M\d{2,4}[A-Z-]*|iX\d{3,4})\b/gi
       ];
       const matches = [];
       for (const pattern of modelPatterns) {
@@ -630,9 +663,9 @@
       }
       if (brand) {
         const afterBrand = clean.split(new RegExp(escapeRegExp(brand), "i"))[1] || "";
-        const words = afterBrand.split(/\s+/).filter(Boolean).slice(0, 4);
-        const candidate = words.filter((w) => !stopWords.has(w.toLowerCase())).join(" ");
-        if (candidate && candidate.length >= 3) matches.unshift(candidate);
+        const words = afterBrand.split(/\s+/).filter(Boolean).slice(0, 6);
+        const modelWord = words.find((word) => isModelLike(word));
+        if (modelWord) matches.unshift(modelWord);
       }
       return matches.find((item) => item.length <= 55) || "";
     }
@@ -640,20 +673,26 @@
     function extractTokens(title, map) {
       const clean = normalizeTitle(title);
       const known = detectKnownPhrase(clean, map);
-      const chunks = clean.match(/[A-Za-z][A-Za-z0-9-]*(?:\s+[A-Za-z0-9][A-Za-z0-9-]*){0,3}|[\u3040-\u30ff\u3400-\u9fff]+(?:\s*[\u3040-\u30ff\u3400-\u9fffA-Za-z0-9.-]+){0,3}/g) || [];
-      const scored = chunks
-        .map((chunk) => chunk.trim())
-        .filter((chunk) => chunk.length >= 2)
-        .filter((chunk) => !stopWords.has(chunk.toLowerCase()))
-        .filter((chunk) => !/^\d+$/.test(chunk))
-        .map((chunk) => ({
-          text: properCase(chunk),
-          score: tokenScore(chunk, known)
-        }))
-        .sort((a, b) => b.score - a.score)
-        .map((item) => item.text);
-      return unique([...known, ...scored]).slice(0, 7);
+      const models = [
+        ...(clean.match(/\b[A-Z]{1,6}[- ]?[A-Z]{0,3}\d{1,5}[A-Z0-9]*(?:-[A-Z0-9]+)*\b/g) || []),
+        ...(clean.match(/\b\d{3,5}[A-Z]{0,3}[- ][A-Z0-9]{1,8}\b/g) || []),
+        ...(clean.match(/\b(?:Vol\.?\s*\d+|TAG\s*\d+|M\d{2,4}[A-Z-]*|iX\d{3,4})\b/gi) || [])
+      ].map((item) => item.trim()).filter((item) => isModelLike(item) || /\d/.test(item));
+      const japanese = clean.match(/[\u3040-\u30ff\u3400-\u9fff][\u3040-\u30ff\u3400-\u9fffA-Za-z0-9 .-]{1,24}/g) || [];
+      const brandOrCharacter = known.filter((item) => {
+        const key = item.toLowerCase();
+        return knownBrands.has(key) || knownCharacters.has(key);
+      });
+      return unique([...brandOrCharacter, ...models, ...japanese].filter(Boolean)).slice(0, 7);
     }
+
+    function isGenericChunk(chunk) {
+      const words = String(chunk || "").toLowerCase().split(/\s+/).filter(Boolean);
+      if (!words.length) return true;
+      if (words.every((word) => stopWords.has(word))) return true;
+      return stopWords.has(String(chunk || "").toLowerCase());
+    }
+
 
     function tokenScore(token, known) {
       let score = 0;
@@ -833,9 +872,11 @@
     }
 
     function classifyToken(token) {
-      if (/Pokemon|One Piece|Dragon Ball|Naruto|Demon Slayer|Jujutsu|Miku|Kitty|Gundam|Disney|[\u3040-\u30ff\u3400-\u9fff]/i.test(token)) return "Character";
+      const key = String(token || "").toLowerCase();
+      if (knownBrands.has(key)) return "Brand";
+      if (knownCharacters.has(key) || /[\u3040-\u30ff\u3400-\u9fff]/.test(token)) return "Character";
       if (/\d/.test(token)) return "Model";
-      return "Brand";
+      return "Keyword";
     }
 
     function addAvgPrice(item) {
