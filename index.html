@@ -1,0 +1,698 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Keyword Research</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172026;
+      --muted: #65717a;
+      --line: #d9e0e5;
+      --surface: #ffffff;
+      --soft: #f4f7f8;
+      --accent: #0f766e;
+      --accent-2: #b45309;
+      --accent-3: #2563eb;
+      --danger: #b91c1c;
+      --shadow: 0 14px 40px rgba(20, 32, 38, .10);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Meiryo, system-ui, sans-serif;
+      color: var(--ink);
+      background: #eef3f5;
+    }
+
+    button, input, textarea, select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.2;
+      font-weight: 750;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .shell {
+      display: grid;
+      grid-template-columns: minmax(280px, 360px) 1fr;
+      gap: 18px;
+      padding: 18px;
+      width: 100%;
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .control-panel {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-self: start;
+      position: sticky;
+      top: 78px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 7px;
+    }
+
+    textarea, input, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      color: var(--ink);
+      padding: 10px 11px;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 128px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    textarea:focus, input:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, .14);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .btn {
+      min-height: 38px;
+      border-radius: 6px;
+      padding: 0 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      font-weight: 700;
+      color: var(--ink);
+      background: var(--soft);
+      border: 1px solid var(--line);
+      white-space: nowrap;
+    }
+
+    .btn.primary {
+      color: #fff;
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .btn.warn {
+      color: #fff;
+      background: var(--accent-2);
+      border-color: var(--accent-2);
+    }
+
+    .btn.danger {
+      color: #fff;
+      background: var(--danger);
+      border-color: var(--danger);
+    }
+
+    .btn.icon {
+      width: 38px;
+      padding: 0;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(120px, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .metric {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      min-height: 80px;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 8px;
+      font-size: 26px;
+      line-height: 1;
+    }
+
+    .workspace {
+      min-width: 0;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .filters {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .search {
+      min-width: 260px;
+      max-width: 380px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    th {
+      background: #f8fafb;
+      color: #48545d;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0;
+      position: sticky;
+      top: 76px;
+      z-index: 2;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .table-wrap {
+      overflow: auto;
+      max-height: calc(100vh - 226px);
+    }
+
+    .kw {
+      width: 28%;
+      font-weight: 750;
+      word-break: break-word;
+    }
+
+    .intent { width: 13%; }
+    .score { width: 12%; }
+    .notes { width: 30%; }
+    .actions { width: 92px; }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      border-radius: 999px;
+      padding: 0 9px;
+      font-size: 12px;
+      font-weight: 750;
+      color: #123;
+      background: #e5eef7;
+    }
+
+    .tag.buy { background: #dcfce7; color: #14532d; }
+    .tag.compare { background: #fef3c7; color: #78350f; }
+    .tag.info { background: #dbeafe; color: #1e3a8a; }
+    .tag.problem { background: #fee2e2; color: #7f1d1d; }
+
+    .priority {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+
+    .bar {
+      height: 8px;
+      border-radius: 999px;
+      background: #e6ecef;
+      overflow: hidden;
+    }
+
+    .bar i {
+      display: block;
+      height: 100%;
+      width: var(--w);
+      background: var(--accent-3);
+    }
+
+    .empty {
+      padding: 48px 24px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .notice {
+      border-left: 4px solid var(--accent);
+      background: #ecfdf5;
+      padding: 10px 12px;
+      border-radius: 6px;
+      color: #134e4a;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 920px) {
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .shell {
+        grid-template-columns: 1fr;
+      }
+
+      .control-panel {
+        position: static;
+      }
+
+      .metrics {
+        grid-template-columns: repeat(2, minmax(120px, 1fr));
+      }
+
+      .table-wrap {
+        max-height: none;
+      }
+
+      th {
+        position: static;
+      }
+    }
+
+    @media (max-width: 620px) {
+      header, .shell {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
+      .row, .metrics {
+        grid-template-columns: 1fr;
+      }
+
+      .search {
+        min-width: 100%;
+      }
+
+      table {
+        min-width: 760px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div>
+        <h1>Keyword Research</h1>
+        <div class="muted">ローカル保存対応のキーワード整理ツール</div>
+      </div>
+      <div class="header-actions">
+        <button class="btn" id="loadSample" title="サンプルを入力">Sample</button>
+        <button class="btn" id="exportCsv" title="CSVを書き出し">Export CSV</button>
+        <button class="btn danger" id="clearAll" title="保存データを削除">Clear</button>
+      </div>
+    </header>
+
+    <main class="shell">
+      <section class="panel control-panel" aria-label="入力">
+        <div class="notice">このファイルは単体で開けます。入力内容はこのブラウザに自動保存されます。</div>
+        <div>
+          <label for="seed">元キーワード</label>
+          <textarea id="seed" placeholder="例: seiko vintage watch&#10;citizen eco drive&#10;g shock limited"></textarea>
+        </div>
+        <div class="row">
+          <div>
+            <label for="market">市場</label>
+            <select id="market">
+              <option>eBay</option>
+              <option>Google</option>
+              <option>Amazon</option>
+              <option>Mercari</option>
+              <option>Yahoo Auctions</option>
+            </select>
+          </div>
+          <div>
+            <label for="language">言語</label>
+            <select id="language">
+              <option>English</option>
+              <option>Japanese</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label for="volume">検索量</label>
+            <input id="volume" type="number" min="0" value="50">
+          </div>
+          <div>
+            <label for="difficulty">競合度</label>
+            <input id="difficulty" type="number" min="0" max="100" value="35">
+          </div>
+        </div>
+        <button class="btn primary" id="generate">Generate Ideas</button>
+        <p class="muted">各行から購入系・比較系・情報系の候補を作り、優先度を計算します。数値はあとから表で編集できます。</p>
+      </section>
+
+      <section class="workspace" aria-label="結果">
+        <div class="metrics">
+          <div class="metric"><span>Total</span><strong id="totalCount">0</strong></div>
+          <div class="metric"><span>High Priority</span><strong id="highCount">0</strong></div>
+          <div class="metric"><span>Average Score</span><strong id="avgScore">0</strong></div>
+          <div class="metric"><span>Buyer Intent</span><strong id="buyerCount">0</strong></div>
+        </div>
+
+        <div class="toolbar">
+          <input class="search" id="search" placeholder="キーワードを検索">
+          <div class="filters">
+            <select id="intentFilter" title="意図で絞り込み">
+              <option value="all">All intents</option>
+              <option value="Buy">Buy</option>
+              <option value="Compare">Compare</option>
+              <option value="Info">Info</option>
+              <option value="Problem">Problem</option>
+            </select>
+            <select id="sortBy" title="並び替え">
+              <option value="score">Score</option>
+              <option value="keyword">Keyword</option>
+              <option value="volume">Volume</option>
+              <option value="difficulty">Difficulty</option>
+            </select>
+          </div>
+        </div>
+
+        <section class="panel table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th class="kw">Keyword</th>
+                <th class="intent">Intent</th>
+                <th>Volume</th>
+                <th>Difficulty</th>
+                <th class="score">Priority</th>
+                <th class="notes">Notes</th>
+                <th class="actions"></th>
+              </tr>
+            </thead>
+            <tbody id="tbody">
+              <tr><td class="empty" colspan="7">元キーワードを入力して候補を作成してください。</td></tr>
+            </tbody>
+          </table>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const storeKey = "keyword-research-v1";
+    const suffixes = {
+      Buy: ["for sale", "buy", "price", "authentic", "with box"],
+      Compare: ["vs", "review", "best", "comparison", "model differences"],
+      Info: ["meaning", "history", "specs", "manual", "release year"],
+      Problem: ["repair", "battery replacement", "not working", "parts", "scratch removal"]
+    };
+    const state = {
+      ideas: [],
+      seed: "",
+      market: "eBay",
+      language: "English",
+      volume: 50,
+      difficulty: 35
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const tbody = $("tbody");
+
+    function normalize(text) {
+      return text.trim().replace(/\s+/g, " ");
+    }
+
+    function hashScore(text) {
+      let hash = 0;
+      for (let i = 0; i < text.length; i++) hash = (hash * 31 + text.charCodeAt(i)) >>> 0;
+      return hash % 31;
+    }
+
+    function calcPriority(volume, difficulty, intent) {
+      const intentBoost = intent === "Buy" ? 16 : intent === "Compare" ? 10 : intent === "Problem" ? 7 : 3;
+      return Math.max(1, Math.min(100, Math.round(volume * 0.72 - difficulty * 0.38 + intentBoost)));
+    }
+
+    function makeIdeas() {
+      const seeds = $("seed").value.split(/\n|,/).map(normalize).filter(Boolean);
+      const baseVolume = Number($("volume").value) || 0;
+      const baseDifficulty = Number($("difficulty").value) || 0;
+      const seen = new Set();
+      const ideas = [];
+
+      seeds.forEach((seed) => {
+        Object.entries(suffixes).forEach(([intent, words]) => {
+          words.forEach((word) => {
+            const keyword = normalize(`${seed} ${word}`);
+            const key = keyword.toLowerCase();
+            if (seen.has(key)) return;
+            seen.add(key);
+            const variation = hashScore(keyword);
+            const volume = Math.max(0, baseVolume + variation - 12);
+            const difficulty = Math.max(0, Math.min(100, baseDifficulty + Math.round(variation / 2) - 8));
+            ideas.push({
+              id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()),
+              keyword,
+              intent,
+              volume,
+              difficulty,
+              score: calcPriority(volume, difficulty, intent),
+              notes: intent === "Buy" ? "商品ページ・出品タイトル向け" :
+                intent === "Compare" ? "比較記事・カテゴリ説明向け" :
+                intent === "Problem" ? "FAQ・部品取り・修理訴求向け" : "説明文・基礎情報向け"
+            });
+          });
+        });
+      });
+
+      state.ideas = ideas;
+      syncFromInputs();
+      save();
+      render();
+    }
+
+    function syncFromInputs() {
+      state.seed = $("seed").value;
+      state.market = $("market").value;
+      state.language = $("language").value;
+      state.volume = Number($("volume").value) || 0;
+      state.difficulty = Number($("difficulty").value) || 0;
+    }
+
+    function save() {
+      localStorage.setItem(storeKey, JSON.stringify(state));
+    }
+
+    function load() {
+      const saved = localStorage.getItem(storeKey);
+      if (!saved) return;
+      try {
+        Object.assign(state, JSON.parse(saved));
+      } catch {
+        return;
+      }
+      $("seed").value = state.seed || "";
+      $("market").value = state.market || "eBay";
+      $("language").value = state.language || "English";
+      $("volume").value = state.volume ?? 50;
+      $("difficulty").value = state.difficulty ?? 35;
+    }
+
+    function filteredIdeas() {
+      const q = $("search").value.trim().toLowerCase();
+      const intent = $("intentFilter").value;
+      const sortBy = $("sortBy").value;
+      return [...state.ideas]
+        .filter((idea) => intent === "all" || idea.intent === intent)
+        .filter((idea) => !q || idea.keyword.toLowerCase().includes(q))
+        .sort((a, b) => {
+          if (sortBy === "keyword") return a.keyword.localeCompare(b.keyword);
+          return Number(b[sortBy]) - Number(a[sortBy]);
+        });
+    }
+
+    function updateIdea(id, field, value) {
+      const idea = state.ideas.find((item) => item.id === id);
+      if (!idea) return;
+      idea[field] = field === "volume" || field === "difficulty" ? Number(value) || 0 : value;
+      idea.score = calcPriority(idea.volume, idea.difficulty, idea.intent);
+      save();
+      render();
+    }
+
+    function removeIdea(id) {
+      state.ideas = state.ideas.filter((idea) => idea.id !== id);
+      save();
+      render();
+    }
+
+    function render() {
+      const ideas = filteredIdeas();
+      const total = state.ideas.length;
+      const high = state.ideas.filter((idea) => idea.score >= 70).length;
+      const avg = total ? Math.round(state.ideas.reduce((sum, idea) => sum + idea.score, 0) / total) : 0;
+      const buyers = state.ideas.filter((idea) => idea.intent === "Buy").length;
+      $("totalCount").textContent = total;
+      $("highCount").textContent = high;
+      $("avgScore").textContent = avg;
+      $("buyerCount").textContent = buyers;
+
+      if (!ideas.length) {
+        tbody.innerHTML = '<tr><td class="empty" colspan="7">表示できる候補がありません。</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = ideas.map((idea) => `
+        <tr>
+          <td class="kw"><input value="${escapeHtml(idea.keyword)}" data-id="${idea.id}" data-field="keyword"></td>
+          <td class="intent"><span class="tag ${idea.intent.toLowerCase()}">${idea.intent}</span></td>
+          <td><input type="number" min="0" value="${idea.volume}" data-id="${idea.id}" data-field="volume"></td>
+          <td><input type="number" min="0" max="100" value="${idea.difficulty}" data-id="${idea.id}" data-field="difficulty"></td>
+          <td class="score">
+            <div class="priority"><strong>${idea.score}</strong><span class="bar" style="--w:${idea.score}%"><i></i></span></div>
+          </td>
+          <td class="notes"><input value="${escapeHtml(idea.notes)}" data-id="${idea.id}" data-field="notes"></td>
+          <td class="actions"><button class="btn icon" data-remove="${idea.id}" title="削除">×</button></td>
+        </tr>
+      `).join("");
+    }
+
+    function escapeHtml(text) {
+      return String(text).replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      })[char]);
+    }
+
+    function exportCsv() {
+      const rows = [["Keyword", "Intent", "Volume", "Difficulty", "Priority", "Notes"]];
+      state.ideas.forEach((idea) => rows.push([idea.keyword, idea.intent, idea.volume, idea.difficulty, idea.score, idea.notes]));
+      const csv = rows.map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(",")).join("\n");
+      const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "keyword-research.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    $("generate").addEventListener("click", makeIdeas);
+    $("exportCsv").addEventListener("click", exportCsv);
+    $("clearAll").addEventListener("click", () => {
+      if (!confirm("保存データを削除しますか？")) return;
+      state.ideas = [];
+      $("seed").value = "";
+      localStorage.removeItem(storeKey);
+      render();
+    });
+    $("loadSample").addEventListener("click", () => {
+      $("seed").value = "seiko vintage watch\ncitizen eco drive\ng shock limited";
+      $("volume").value = 70;
+      $("difficulty").value = 42;
+      makeIdeas();
+    });
+    ["seed", "market", "language", "volume", "difficulty"].forEach((id) => {
+      $(id).addEventListener("input", () => {
+        syncFromInputs();
+        save();
+      });
+    });
+    ["search", "intentFilter", "sortBy"].forEach((id) => $(id).addEventListener("input", render));
+    tbody.addEventListener("change", (event) => {
+      const target = event.target;
+      if (!target.dataset.id) return;
+      updateIdea(target.dataset.id, target.dataset.field, target.value);
+    });
+    tbody.addEventListener("click", (event) => {
+      const id = event.target.dataset.remove;
+      if (id) removeIdea(id);
+    });
+
+    load();
+    render();
+  </script>
+</body>
+</html>
