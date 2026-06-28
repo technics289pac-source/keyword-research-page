@@ -357,7 +357,7 @@
     <header>
       <div>
         <h1>eBay Keyword Research</h1>
-        <div class="sub">eBayの売れた商品CSVから、次に仕入れて出品する候補キーワードを抽出します。</div>
+        <div class="sub">eBayの売れた商品CSVから、売れているブランド名・モデル名・キャラクター名・型番を抽出します。</div>
       </div>
       <div class="actions">
         <button class="btn" id="sampleBtn">Sample</button>
@@ -389,7 +389,7 @@
           <div>
             <label for="sortMode">並び順</label>
             <select id="sortMode">
-              <option value="sold">候補スコア順</option>
+              <option value="sold">売れた数順</option>
               <option value="listing">出品数順</option>
               <option value="price">平均価格順</option>
               <option value="keyword">キーワード順</option>
@@ -421,15 +421,15 @@
 
       <section class="panel">
         <div class="tabs">
-          <button class="tab active" data-tab="combo">出品候補キーワード</button>
+          <button class="tab active" data-tab="token">売れているキーワード</button>
+          <button class="tab" data-tab="combo">ブランド+モデル</button>
           <button class="tab" data-tab="brand">ブランド集計</button>
-          <button class="tab" data-tab="token">キーワード候補</button>
           <button class="tab" data-tab="rows">取り込み行</button>
           <button class="tab" data-tab="ignored">除外・警告</button>
         </div>
         <div class="toolbar">
           <input id="tableSearch" placeholder="表内を検索">
-          <div class="hint" id="tableNote">仕入れ候補にしやすい順で並べます</div>
+          <div class="hint" id="tableNote">売れている数が多い順で並べます</div>
         </div>
         <div class="table-wrap">
           <table>
@@ -449,7 +449,7 @@
       combo: [],
       brand: [],
       token: [],
-      activeTab: "combo"
+      activeTab: "token"
     };
 
     const knownMap = {
@@ -840,14 +840,7 @@
 
     function addAvgPrice(item) {
       const avgPrice = item.soldCount ? item.revenue / item.soldCount : 0;
-      const demand = Math.min(50, item.soldCount * 8);
-      const price = Math.min(30, Math.log10(avgPrice + 1) * 12);
-      const confidence = Math.min(15, item.listingCount * 4);
-      const competitionPenalty = Math.max(0, item.listingCount - item.soldCount) * 2;
-      const score = Math.max(1, Math.min(100, Math.round(demand + price + confidence - competitionPenalty)));
-      const action = score >= 70 ? "仕入れ候補" : score >= 45 ? "要確認" : "優先低";
-      const actionClass = score >= 70 ? "buy" : score >= 45 ? "watch" : "skip";
-      return { ...item, avgPrice, score, action, actionClass };
+      return { ...item, avgPrice };
     }
 
     function sortItems(items) {
@@ -856,7 +849,7 @@
         if (mode === "keyword") return String(a.keyword).localeCompare(String(b.keyword));
         if (mode === "price") return b.avgPrice - a.avgPrice;
         if (mode === "listing") return b.listingCount - a.listingCount;
-        return b.score - a.score || b.soldCount - a.soldCount || b.listingCount - a.listingCount;
+        return b.soldCount - a.soldCount || b.listingCount - a.listingCount;
       });
     }
 
@@ -884,7 +877,7 @@
       const data = (tab === "combo" ? state.combo : tab === "brand" ? state.brand : tab === "token" ? state.token : tab === "rows" ? state.usedRows : state.ignoredRows)
         .filter((row) => !q || JSON.stringify(row).toLowerCase().includes(q));
 
-      if (tab === "combo") renderTable(["SCORE", "ACTION", "BRAND", "MODEL", "KEYWORD_EN", "KEYWORD_JP", "LISTING_COUNT", "SOLD_COUNT", "AVG_PRICE"], data, comboRow);
+      if (tab === "combo") renderTable(["BRAND", "MODEL", "KEYWORD_EN", "KEYWORD_JP", "LISTING_COUNT", "SOLD_COUNT", "AVG_PRICE"], data, comboRow);
       if (tab === "brand") renderTable(["KEYWORD", "KEYWORD_JP", "LISTING_COUNT", "SOLD_COUNT", "AVG_PRICE"], data, brandRow);
       if (tab === "token") renderTable(["TYPE", "KEYWORD", "KEYWORD_JP", "LISTING_COUNT", "SOLD_COUNT", "AVG_PRICE"], data, tokenRow);
       if (tab === "rows") renderTable(["LINE", "BRAND", "MODEL", "CHARACTER", "KEYWORD", "SOLD", "PRICE", "TITLE"], data, usedRow);
@@ -909,7 +902,7 @@
     }
 
     function comboRow(row) {
-      return `<tr><td>${row.score}</td><td><span class="tag ${row.actionClass}">${row.action}</span></td><td>${html(row.brand)}</td><td>${html(row.model)}</td><td>${html(row.keyword)}</td><td>${html(row.keywordJp)}</td><td>${row.listingCount}</td><td>${row.soldCount}</td><td>${money(row.avgPrice)}</td></tr>`;
+      return `<tr><td>${html(row.brand)}</td><td>${html(row.model)}</td><td>${html(row.keyword)}</td><td>${html(row.keywordJp)}</td><td>${row.listingCount}</td><td>${row.soldCount}</td><td>${money(row.avgPrice)}</td></tr>`;
     }
 
     function brandRow(row) {
@@ -940,8 +933,8 @@
     }
 
     function exportSummary() {
-      const rows = [["SCORE", "ACTION", "BRAND", "MODEL", "KEYWORD_EN", "KEYWORD_JP", "LISTING_COUNT", "SOLD_COUNT", "AVG_PRICE"]];
-      state.combo.forEach((row) => rows.push([row.score, row.action, row.brand, row.model, row.keyword, row.keywordJp, row.listingCount, row.soldCount, money(row.avgPrice)]));
+      const rows = [["TYPE", "KEYWORD_EN", "KEYWORD_JP", "LISTING_COUNT", "SOLD_COUNT", "AVG_PRICE"]];
+      state.token.forEach((row) => rows.push([row.type, row.keyword, row.keywordJp, row.listingCount, row.soldCount, money(row.avgPrice)]));
       exportCsv(rows, "ebay-keyword-summary.csv");
     }
 
