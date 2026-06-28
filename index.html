@@ -3,20 +3,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Keyword Research</title>
+  <title>eBay Keyword Research</title>
   <style>
     :root {
       color-scheme: light;
       --ink: #172026;
-      --muted: #65717a;
-      --line: #d9e0e5;
-      --surface: #ffffff;
-      --soft: #f4f7f8;
+      --muted: #66727c;
+      --line: #ded8ce;
+      --paper: #fbf8f1;
+      --surface: #fffdf7;
+      --soft: #f4efe4;
       --accent: #0f766e;
-      --accent-2: #b45309;
-      --accent-3: #2563eb;
+      --blue: #2563eb;
+      --warn: #b45309;
       --danger: #b91c1c;
-      --shadow: 0 14px 40px rgba(20, 32, 38, .10);
+      --shadow: 0 18px 48px rgba(45, 34, 18, .10);
     }
 
     * { box-sizing: border-box; }
@@ -25,17 +26,11 @@
       margin: 0;
       font-family: "Segoe UI", Meiryo, system-ui, sans-serif;
       color: var(--ink);
-      background: #eef3f5;
+      background: #eee7da;
     }
 
-    button, input, textarea, select {
-      font: inherit;
-    }
-
-    button {
-      border: 0;
-      cursor: pointer;
-    }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; border: 0; }
 
     .app {
       min-height: 100vh;
@@ -47,37 +42,59 @@
       background: var(--surface);
       border-bottom: 1px solid var(--line);
       padding: 18px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
-      position: sticky;
-      top: 0;
-      z-index: 5;
     }
 
     h1 {
       margin: 0;
-      font-size: 22px;
+      font-size: 24px;
       line-height: 1.2;
       font-weight: 750;
     }
 
-    .header-actions {
+    .sub {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .actions {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
       justify-content: flex-end;
     }
 
-    .shell {
+    .btn {
+      min-height: 38px;
+      border-radius: 6px;
+      padding: 0 13px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      background: var(--soft);
+      border: 1px solid var(--line);
+      color: var(--ink);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .btn.warn { background: var(--warn); border-color: var(--warn); color: #fff; }
+    .btn.danger { background: var(--danger); border-color: var(--danger); color: #fff; }
+
+    main {
+      width: min(1320px, calc(100vw - 28px));
+      margin: 18px auto 42px;
       display: grid;
-      grid-template-columns: minmax(280px, 360px) 1fr;
-      gap: 18px;
-      padding: 18px;
-      width: 100%;
-      max-width: 1440px;
-      margin: 0 auto;
+      gap: 16px;
     }
 
     .panel {
@@ -85,26 +102,46 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       box-shadow: var(--shadow);
+      overflow: hidden;
     }
 
-    .control-panel {
-      padding: 18px;
+    .panel-head {
+      padding: 15px 18px;
+      border-bottom: 1px solid var(--line);
       display: flex;
-      flex-direction: column;
-      gap: 16px;
-      align-self: start;
-      position: sticky;
-      top: 78px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .panel-title {
+      font-size: 18px;
+      font-weight: 750;
+    }
+
+    .panel-note {
+      color: var(--muted);
+      font-size: 12px;
+      text-align: right;
+    }
+
+    .controls {
+      padding: 16px 18px 18px;
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr 1fr;
+      gap: 12px;
+      align-items: end;
     }
 
     label {
       display: block;
-      font-size: 13px;
-      font-weight: 700;
       margin-bottom: 7px;
+      color: #43505a;
+      font-size: 12px;
+      font-weight: 750;
     }
 
-    textarea, input, select {
+    input, select, textarea {
       width: 100%;
       border: 1px solid var(--line);
       border-radius: 6px;
@@ -115,65 +152,28 @@
     }
 
     textarea {
-      min-height: 128px;
+      min-height: 80px;
       resize: vertical;
-      line-height: 1.5;
+      line-height: 1.45;
     }
 
-    textarea:focus, input:focus, select:focus {
+    input:focus, select:focus, textarea:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(15, 118, 110, .14);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, .13);
     }
 
-    .row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
+    .full { grid-column: 1 / -1; }
 
-    .btn {
-      min-height: 38px;
-      border-radius: 6px;
-      padding: 0 12px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-      font-weight: 700;
-      color: var(--ink);
-      background: var(--soft);
-      border: 1px solid var(--line);
-      white-space: nowrap;
-    }
-
-    .btn.primary {
-      color: #fff;
-      background: var(--accent);
-      border-color: var(--accent);
-    }
-
-    .btn.warn {
-      color: #fff;
-      background: var(--accent-2);
-      border-color: var(--accent-2);
-    }
-
-    .btn.danger {
-      color: #fff;
-      background: var(--danger);
-      border-color: var(--danger);
-    }
-
-    .btn.icon {
-      width: 38px;
-      padding: 0;
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
     }
 
     .metrics {
       display: grid;
-      grid-template-columns: repeat(4, minmax(120px, 1fr));
+      grid-template-columns: repeat(5, minmax(130px, 1fr));
       gap: 12px;
-      margin-bottom: 14px;
     }
 
     .metric {
@@ -181,14 +181,15 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       padding: 14px;
-      min-height: 80px;
+      min-height: 82px;
+      box-shadow: var(--shadow);
     }
 
     .metric span {
       display: block;
       color: var(--muted);
       font-size: 12px;
-      font-weight: 700;
+      font-weight: 750;
     }
 
     .metric strong {
@@ -198,30 +199,43 @@
       line-height: 1;
     }
 
-    .workspace {
-      min-width: 0;
+    .tabs {
+      display: flex;
+      gap: 6px;
+      border-bottom: 1px solid var(--line);
+      padding: 10px 12px 0;
+      background: var(--paper);
+      overflow-x: auto;
+    }
+
+    .tab {
+      min-height: 38px;
+      padding: 0 14px;
+      border: 1px solid transparent;
+      border-bottom: 0;
+      border-radius: 6px 6px 0 0;
+      background: transparent;
+      font-weight: 750;
+      color: #48545d;
+    }
+
+    .tab.active {
+      color: var(--ink);
+      background: var(--surface);
+      border-color: var(--line);
     }
 
     .toolbar {
+      padding: 12px 14px;
       display: flex;
-      align-items: center;
+      gap: 10px;
       justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
-    }
-
-    .filters {
-      display: flex;
       align-items: center;
-      gap: 8px;
       flex-wrap: wrap;
+      border-bottom: 1px solid var(--line);
     }
 
-    .search {
-      min-width: 260px;
-      max-width: 380px;
-    }
+    .toolbar input { width: min(360px, 100%); }
 
     table {
       width: 100%;
@@ -230,43 +244,32 @@
     }
 
     th, td {
+      padding: 11px 13px;
       border-bottom: 1px solid var(--line);
-      padding: 10px;
-      text-align: left;
       vertical-align: top;
+      text-align: left;
       font-size: 14px;
-    }
-
-    th {
-      background: #f8fafb;
-      color: #48545d;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0;
-      position: sticky;
-      top: 76px;
-      z-index: 2;
-    }
-
-    tr:last-child td {
-      border-bottom: 0;
-    }
-
-    .table-wrap {
-      overflow: auto;
-      max-height: calc(100vh - 226px);
-    }
-
-    .kw {
-      width: 28%;
-      font-weight: 750;
+      line-height: 1.35;
       word-break: break-word;
     }
 
-    .intent { width: 13%; }
-    .score { width: 12%; }
-    .notes { width: 30%; }
-    .actions { width: 92px; }
+    th {
+      color: #43505a;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0;
+      background: #faf6ed;
+      position: sticky;
+      top: 74px;
+      z-index: 3;
+    }
+
+    tbody tr:hover { background: #fffaf0; }
+
+    .table-wrap {
+      overflow: auto;
+      max-height: 64vh;
+    }
 
     .tag {
       display: inline-flex;
@@ -274,103 +277,78 @@
       min-height: 24px;
       border-radius: 999px;
       padding: 0 9px;
+      background: #dbeafe;
+      color: #1e3a8a;
       font-size: 12px;
       font-weight: 750;
-      color: #123;
-      background: #e5eef7;
     }
 
+    .tag.brand { background: #dcfce7; color: #14532d; }
+    .tag.model { background: #fef3c7; color: #78350f; }
+    .tag.character { background: #fee2e2; color: #7f1d1d; }
+    .tag.warn { background: #ffedd5; color: #7c2d12; }
     .tag.buy { background: #dcfce7; color: #14532d; }
-    .tag.compare { background: #fef3c7; color: #78350f; }
-    .tag.info { background: #dbeafe; color: #1e3a8a; }
-    .tag.problem { background: #fee2e2; color: #7f1d1d; }
-
-    .priority {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 4px;
-    }
-
-    .bar {
-      height: 8px;
-      border-radius: 999px;
-      background: #e6ecef;
-      overflow: hidden;
-    }
-
-    .bar i {
-      display: block;
-      height: 100%;
-      width: var(--w);
-      background: var(--accent-3);
-    }
+    .tag.watch { background: #dbeafe; color: #1e3a8a; }
+    .tag.skip { background: #f1f5f9; color: #475569; }
 
     .empty {
-      padding: 48px 24px;
+      padding: 40px 20px;
       text-align: center;
       color: var(--muted);
     }
 
-    .muted {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.5;
+    .checks {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 16px;
+      align-items: center;
     }
 
-    .notice {
-      border-left: 4px solid var(--accent);
-      background: #ecfdf5;
-      padding: 10px 12px;
+    .check {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #43505a;
+    }
+
+    .check input {
+      width: 16px;
+      height: 16px;
+      padding: 0;
+    }
+
+    .status {
+      padding: 10px 14px;
       border-radius: 6px;
+      background: #ecfdf5;
       color: #134e4a;
       font-size: 13px;
-      line-height: 1.5;
+      line-height: 1.45;
     }
 
-    @media (max-width: 920px) {
-      header {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-
-      .shell {
-        grid-template-columns: 1fr;
-      }
-
-      .control-panel {
-        position: static;
-      }
-
-      .metrics {
-        grid-template-columns: repeat(2, minmax(120px, 1fr));
-      }
-
-      .table-wrap {
-        max-height: none;
-      }
-
-      th {
-        position: static;
-      }
+    .status.warn {
+      background: #fff7ed;
+      color: #7c2d12;
     }
 
-    @media (max-width: 620px) {
-      header, .shell {
-        padding-left: 12px;
-        padding-right: 12px;
-      }
+    .mono {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 12px;
+    }
 
-      .row, .metrics {
-        grid-template-columns: 1fr;
-      }
+    @media (max-width: 980px) {
+      header { align-items: flex-start; flex-direction: column; }
+      .controls { grid-template-columns: 1fr 1fr; }
+      .metrics { grid-template-columns: repeat(2, minmax(120px, 1fr)); }
+      th { position: static; }
+    }
 
-      .search {
-        min-width: 100%;
-      }
-
-      table {
-        min-width: 760px;
-      }
+    @media (max-width: 640px) {
+      main { width: calc(100vw - 20px); }
+      .controls, .metrics { grid-template-columns: 1fr; }
+      .table-wrap { max-height: none; }
+      table { min-width: 920px; }
     }
   </style>
 </head>
@@ -378,320 +356,655 @@
   <div class="app">
     <header>
       <div>
-        <h1>Keyword Research</h1>
-        <div class="muted">ローカル保存対応のキーワード整理ツール</div>
+        <h1>eBay Keyword Research</h1>
+        <div class="sub">eBayの売れた商品CSVから、次に仕入れて出品する候補キーワードを抽出します。</div>
       </div>
-      <div class="header-actions">
-        <button class="btn" id="loadSample" title="サンプルを入力">Sample</button>
-        <button class="btn" id="exportCsv" title="CSVを書き出し">Export CSV</button>
-        <button class="btn danger" id="clearAll" title="保存データを削除">Clear</button>
+      <div class="actions">
+        <button class="btn" id="sampleBtn">Sample</button>
+        <button class="btn" id="exportSummaryBtn">Export Summary</button>
+        <button class="btn" id="exportRowsBtn">Export Rows</button>
+        <button class="btn danger" id="clearBtn">Clear</button>
       </div>
     </header>
 
-    <main class="shell">
-      <section class="panel control-panel" aria-label="入力">
-        <div class="notice">このファイルは単体で開けます。入力内容はこのブラウザに自動保存されます。</div>
-        <div>
-          <label for="seed">元キーワード</label>
-          <textarea id="seed" placeholder="例: seiko vintage watch&#10;citizen eco drive&#10;g shock limited"></textarea>
+    <main>
+      <section class="panel">
+        <div class="panel-head">
+          <div class="panel-title">CSV取り込み</div>
+          <div class="panel-note">日本語CSVヘッダーと英語CSVヘッダーの両方に対応</div>
         </div>
-        <div class="row">
+        <div class="controls">
           <div>
-            <label for="market">市場</label>
-            <select id="market">
-              <option>eBay</option>
-              <option>Google</option>
-              <option>Amazon</option>
-              <option>Mercari</option>
-              <option>Yahoo Auctions</option>
+            <label for="csvFile">eBay CSV</label>
+            <input id="csvFile" type="file" accept=".csv,text/csv">
+          </div>
+          <div>
+            <label for="query">検索語・除外チェック</label>
+            <input id="query" placeholder="例: Fujitsu / SHURE / Pokemon">
+          </div>
+          <div>
+            <label for="minSold">最低販売数</label>
+            <input id="minSold" type="number" min="0" value="1">
+          </div>
+          <div>
+            <label for="sortMode">並び順</label>
+            <select id="sortMode">
+              <option value="sold">候補スコア順</option>
+              <option value="listing">出品数順</option>
+              <option value="price">平均価格順</option>
+              <option value="keyword">キーワード順</option>
             </select>
           </div>
-          <div>
-            <label for="language">言語</label>
-            <select id="language">
-              <option>English</option>
-              <option>Japanese</option>
-            </select>
+          <div class="full checks">
+            <label class="check"><input id="requireQuery" type="checkbox" checked> 検索語を含まない行を除外</label>
+            <label class="check"><input id="trustBrand" type="checkbox"> CSVのブランド列を優先</label>
+            <label class="check"><input id="mergeBrandModel" type="checkbox" checked> ブランド+モデルを作成</label>
+          </div>
+          <div class="full">
+            <label for="customMap">日本語変換ルール</label>
+            <textarea id="customMap" placeholder="例:&#10;One Piece=ワンピース&#10;Pokemon=ポケモン&#10;Fujitsu=富士通"></textarea>
+            <div class="hint">1行に1つ、英語=日本語で追加できます。キャラクター名・ブランド名・シリーズ名の補正に使います。</div>
+          </div>
+          <div class="full" id="statusBox">
+            <div class="status">CSVを取り込むと集計します。検索語を入れると、関係ない商品が混ざる事故を減らせます。</div>
           </div>
         </div>
-        <div class="row">
-          <div>
-            <label for="volume">検索量</label>
-            <input id="volume" type="number" min="0" value="50">
-          </div>
-          <div>
-            <label for="difficulty">競合度</label>
-            <input id="difficulty" type="number" min="0" max="100" value="35">
-          </div>
-        </div>
-        <button class="btn primary" id="generate">Generate Ideas</button>
-        <p class="muted">各行から購入系・比較系・情報系の候補を作り、優先度を計算します。数値はあとから表で編集できます。</p>
       </section>
 
-      <section class="workspace" aria-label="結果">
-        <div class="metrics">
-          <div class="metric"><span>Total</span><strong id="totalCount">0</strong></div>
-          <div class="metric"><span>High Priority</span><strong id="highCount">0</strong></div>
-          <div class="metric"><span>Average Score</span><strong id="avgScore">0</strong></div>
-          <div class="metric"><span>Buyer Intent</span><strong id="buyerCount">0</strong></div>
-        </div>
+      <section class="metrics">
+        <div class="metric"><span>CSV Rows</span><strong id="rowCount">0</strong></div>
+        <div class="metric"><span>Used Rows</span><strong id="usedCount">0</strong></div>
+        <div class="metric"><span>Ignored Rows</span><strong id="ignoredCount">0</strong></div>
+        <div class="metric"><span>Keywords</span><strong id="keywordCount">0</strong></div>
+        <div class="metric"><span>Total Sold</span><strong id="soldCount">0</strong></div>
+      </section>
 
+      <section class="panel">
+        <div class="tabs">
+          <button class="tab active" data-tab="combo">出品候補キーワード</button>
+          <button class="tab" data-tab="brand">ブランド集計</button>
+          <button class="tab" data-tab="token">キーワード候補</button>
+          <button class="tab" data-tab="rows">取り込み行</button>
+          <button class="tab" data-tab="ignored">除外・警告</button>
+        </div>
         <div class="toolbar">
-          <input class="search" id="search" placeholder="キーワードを検索">
-          <div class="filters">
-            <select id="intentFilter" title="意図で絞り込み">
-              <option value="all">All intents</option>
-              <option value="Buy">Buy</option>
-              <option value="Compare">Compare</option>
-              <option value="Info">Info</option>
-              <option value="Problem">Problem</option>
-            </select>
-            <select id="sortBy" title="並び替え">
-              <option value="score">Score</option>
-              <option value="keyword">Keyword</option>
-              <option value="volume">Volume</option>
-              <option value="difficulty">Difficulty</option>
-            </select>
-          </div>
+          <input id="tableSearch" placeholder="表内を検索">
+          <div class="hint" id="tableNote">仕入れ候補にしやすい順で並べます</div>
         </div>
-
-        <section class="panel table-wrap">
+        <div class="table-wrap">
           <table>
-            <thead>
-              <tr>
-                <th class="kw">Keyword</th>
-                <th class="intent">Intent</th>
-                <th>Volume</th>
-                <th>Difficulty</th>
-                <th class="score">Priority</th>
-                <th class="notes">Notes</th>
-                <th class="actions"></th>
-              </tr>
-            </thead>
-            <tbody id="tbody">
-              <tr><td class="empty" colspan="7">元キーワードを入力して候補を作成してください。</td></tr>
-            </tbody>
+            <thead id="thead"></thead>
+            <tbody id="tbody"></tbody>
           </table>
-        </section>
+        </div>
       </section>
     </main>
   </div>
 
   <script>
-    const storeKey = "keyword-research-v1";
-    const suffixes = {
-      Buy: ["for sale", "buy", "price", "authentic", "with box"],
-      Compare: ["vs", "review", "best", "comparison", "model differences"],
-      Info: ["meaning", "history", "specs", "manual", "release year"],
-      Problem: ["repair", "battery replacement", "not working", "parts", "scratch removal"]
-    };
     const state = {
-      ideas: [],
-      seed: "",
-      market: "eBay",
-      language: "English",
-      volume: 50,
-      difficulty: 35
+      rows: [],
+      usedRows: [],
+      ignoredRows: [],
+      combo: [],
+      brand: [],
+      token: [],
+      activeTab: "combo"
     };
+
+    const knownMap = {
+      "Fujitsu": "富士通",
+      "ScanSnap": "スキャンスナップ",
+      "Ricoh": "リコー",
+      "Canon": "キヤノン",
+      "Nikon": "ニコン",
+      "Sony": "ソニー",
+      "Panasonic": "パナソニック",
+      "Casio": "カシオ",
+      "Seiko": "セイコー",
+      "Citizen": "シチズン",
+      "Pokemon": "ポケモン",
+      "Pokémon": "ポケモン",
+      "One Piece": "ワンピース",
+      "Dragon Ball": "ドラゴンボール",
+      "Naruto": "ナルト",
+      "Demon Slayer": "鬼滅の刃",
+      "Jujutsu Kaisen": "呪術廻戦",
+      "Hatsune Miku": "初音ミク",
+      "Miku": "ミク",
+      "Hello Kitty": "ハローキティ",
+      "Sanrio": "サンリオ",
+      "Shure": "シュア",
+      "Audio-Technica": "オーディオテクニカ",
+      "Technics": "テクニクス",
+      "LEGO": "レゴ",
+      "Disney": "ディズニー",
+      "Gundam": "ガンダム",
+      "Bandai": "バンダイ",
+      "Tamiya": "タミヤ",
+      "Nintendo": "任天堂",
+      "Game Boy": "ゲームボーイ",
+      "Super Famicom": "スーパーファミコン"
+    };
+
+    const falseBrandMap = {
+      "ALPHA INDUSTRIES": "Alphaを服ブランドとして誤判定している可能性",
+      "大谷翔平": "商品タイトルが検索語と無関係な可能性",
+      "RICOH": "Fujitsu/Ricoh併記品。検索目的により要確認"
+    };
+
+    const stopWords = new Set([
+      "the", "and", "with", "for", "from", "japan", "used", "new", "tested", "working", "authentic",
+      "rare", "mint", "excellent", "condition", "free", "shipping", "set", "lot", "w", "box", "manual",
+      "limited", "edition", "original", "official", "vintage", "black", "white", "red", "blue", "silver",
+      "gold", "green", "yellow", "pink", "brown", "gray", "grey", "no", "case", "power", "adapter",
+      "cable", "ac", "model", "japanese", "version", "unlocked", "docomo", "softbank", "au"
+    ]);
+
+    const titleFields = ["タイトル", "Title", "title", "Item title", "Item Title", "商品名", "名前"];
+    const priceFields = ["価格", "Price", "price", "Sold Price", "sold_price", "落札価格"];
+    const brandFields = ["ブランド", "Brand", "brand"];
+    const soldFields = ["販売数", "Sold", "sold", "Quantity", "quantity", "sold_count", "SOLD_COUNT"];
+    const dateFields = ["販売日", "Sold Date", "sold_date", "Date"];
 
     const $ = (id) => document.getElementById(id);
-    const tbody = $("tbody");
 
-    function normalize(text) {
-      return text.trim().replace(/\s+/g, " ");
+    function getField(row, names) {
+      for (const name of names) {
+        if (Object.prototype.hasOwnProperty.call(row, name)) return row[name];
+      }
+      const lower = Object.keys(row).find((key) => names.map(String).map((n) => n.toLowerCase()).includes(key.toLowerCase()));
+      return lower ? row[lower] : "";
     }
 
-    function hashScore(text) {
-      let hash = 0;
-      for (let i = 0; i < text.length; i++) hash = (hash * 31 + text.charCodeAt(i)) >>> 0;
-      return hash % 31;
+    function parseCsv(text) {
+      const rows = [];
+      let row = [];
+      let cell = "";
+      let inQuotes = false;
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        const next = text[i + 1];
+        if (ch === '"' && inQuotes && next === '"') {
+          cell += '"';
+          i++;
+        } else if (ch === '"') {
+          inQuotes = !inQuotes;
+        } else if (ch === "," && !inQuotes) {
+          row.push(cell);
+          cell = "";
+        } else if ((ch === "\n" || ch === "\r") && !inQuotes) {
+          if (ch === "\r" && next === "\n") i++;
+          row.push(cell);
+          if (row.some((value) => value.trim() !== "")) rows.push(row);
+          row = [];
+          cell = "";
+        } else {
+          cell += ch;
+        }
+      }
+      row.push(cell);
+      if (row.some((value) => value.trim() !== "")) rows.push(row);
+      if (!rows.length) return [];
+      const headers = rows.shift().map((h) => h.trim());
+      return rows.map((values) => Object.fromEntries(headers.map((h, i) => [h, values[i] ?? ""])));
     }
 
-    function calcPriority(volume, difficulty, intent) {
-      const intentBoost = intent === "Buy" ? 16 : intent === "Compare" ? 10 : intent === "Problem" ? 7 : 3;
-      return Math.max(1, Math.min(100, Math.round(volume * 0.72 - difficulty * 0.38 + intentBoost)));
+    function numberValue(value, fallback = 0) {
+      const cleaned = String(value ?? "").replace(/[,$¥円\s]/g, "");
+      const num = Number(cleaned);
+      return Number.isFinite(num) ? num : fallback;
     }
 
-    function makeIdeas() {
-      const seeds = $("seed").value.split(/\n|,/).map(normalize).filter(Boolean);
-      const baseVolume = Number($("volume").value) || 0;
-      const baseDifficulty = Number($("difficulty").value) || 0;
-      const seen = new Set();
-      const ideas = [];
+    function normalizeTitle(title) {
+      return String(title || "")
+        .replace(/[【】()[\]{}]/g, " ")
+        .replace(/[|/:;,]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
 
-      seeds.forEach((seed) => {
-        Object.entries(suffixes).forEach(([intent, words]) => {
-          words.forEach((word) => {
-            const keyword = normalize(`${seed} ${word}`);
-            const key = keyword.toLowerCase();
-            if (seen.has(key)) return;
-            seen.add(key);
-            const variation = hashScore(keyword);
-            const volume = Math.max(0, baseVolume + variation - 12);
-            const difficulty = Math.max(0, Math.min(100, baseDifficulty + Math.round(variation / 2) - 8));
-            ideas.push({
-              id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()),
-              keyword,
-              intent,
-              volume,
-              difficulty,
-              score: calcPriority(volume, difficulty, intent),
-              notes: intent === "Buy" ? "商品ページ・出品タイトル向け" :
-                intent === "Compare" ? "比較記事・カテゴリ説明向け" :
-                intent === "Problem" ? "FAQ・部品取り・修理訴求向け" : "説明文・基礎情報向け"
-            });
-          });
+    function properCase(text) {
+      if (!text) return "";
+      if (/^[A-Z0-9-]+$/.test(text)) return text;
+      return text.split(/\s+/).map((word) => {
+        if (/^[A-Z0-9-]+$/.test(word)) return word;
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      }).join(" ");
+    }
+
+    function userMap() {
+      const map = { ...knownMap };
+      $("customMap").value.split(/\n/).forEach((line) => {
+        const parts = line.split("=");
+        if (parts.length >= 2) {
+          const en = parts.shift().trim();
+          const jp = parts.join("=").trim();
+          if (en && jp) map[en] = jp;
+        }
+      });
+      return map;
+    }
+
+    function toJapanese(keyword, map) {
+      let jp = keyword;
+      Object.entries(map)
+        .sort((a, b) => b[0].length - a[0].length)
+        .forEach(([en, ja]) => {
+          jp = jp.replace(new RegExp(escapeRegExp(en), "ig"), ja);
         });
+      return jp;
+    }
+
+    function escapeRegExp(text) {
+      return String(text).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+
+    function detectKnownPhrase(title, map) {
+      const found = [];
+      const lower = title.toLowerCase();
+      Object.keys(map)
+        .sort((a, b) => b.length - a.length)
+        .forEach((phrase) => {
+          if (lower.includes(phrase.toLowerCase()) && !found.some((x) => x.toLowerCase().includes(phrase.toLowerCase()))) {
+            found.push(phrase);
+          }
+        });
+      return found.slice(0, 3);
+    }
+
+    function extractModel(title, brand) {
+      const clean = normalizeTitle(title);
+      const modelPatterns = [
+        /\b[A-Z]{1,5}[- ]?[A-Z]?\d{2,5}[A-Z0-9-]*\b/g,
+        /\b\d{3,5}[A-Z]{0,3}[- ][A-Z0-9]{1,6}\b/g,
+        /\b[A-Z][a-z]+(?:\s+[A-Z0-9][A-Za-z0-9-]+){0,3}\s+(?:Vol\.?\s*\d+|TAG\s*\d+|M\d{2,4}[A-Z-]*|iX\d{3,4})\b/g
+      ];
+      const matches = [];
+      for (const pattern of modelPatterns) {
+        const found = clean.match(pattern) || [];
+        found.forEach((item) => {
+          const model = item.trim();
+          if (model.length >= 2 && !matches.includes(model)) matches.push(model);
+        });
+      }
+      if (brand) {
+        const afterBrand = clean.split(new RegExp(escapeRegExp(brand), "i"))[1] || "";
+        const words = afterBrand.split(/\s+/).filter(Boolean).slice(0, 4);
+        const candidate = words.filter((w) => !stopWords.has(w.toLowerCase())).join(" ");
+        if (candidate && candidate.length >= 3) matches.unshift(candidate);
+      }
+      return matches.find((item) => item.length <= 55) || "";
+    }
+
+    function extractTokens(title, map) {
+      const clean = normalizeTitle(title);
+      const known = detectKnownPhrase(clean, map);
+      const chunks = clean.match(/[A-Za-z][A-Za-z0-9-]*(?:\s+[A-Za-z0-9][A-Za-z0-9-]*){0,3}|[\u3040-\u30ff\u3400-\u9fff]+(?:\s*[\u3040-\u30ff\u3400-\u9fffA-Za-z0-9.-]+){0,3}/g) || [];
+      const scored = chunks
+        .map((chunk) => chunk.trim())
+        .filter((chunk) => chunk.length >= 2)
+        .filter((chunk) => !stopWords.has(chunk.toLowerCase()))
+        .filter((chunk) => !/^\d+$/.test(chunk))
+        .map((chunk) => ({
+          text: properCase(chunk),
+          score: tokenScore(chunk, known)
+        }))
+        .sort((a, b) => b.score - a.score)
+        .map((item) => item.text);
+      return unique([...known, ...scored]).slice(0, 7);
+    }
+
+    function tokenScore(token, known) {
+      let score = 0;
+      if (known.some((k) => token.toLowerCase().includes(k.toLowerCase()))) score += 20;
+      if (/[A-Z]{2,}/.test(token)) score += 8;
+      if (/\d/.test(token)) score += 7;
+      if (/[\u3040-\u30ff\u3400-\u9fff]/.test(token)) score += 8;
+      if (token.split(/\s+/).length >= 2) score += 5;
+      score += Math.min(token.length, 12);
+      return score;
+    }
+
+    function unique(values) {
+      const seen = new Set();
+      const out = [];
+      for (const value of values) {
+        const clean = String(value || "").trim();
+        const key = clean.toLowerCase();
+        if (!clean || seen.has(key)) continue;
+        seen.add(key);
+        out.push(clean);
+      }
+      return out;
+    }
+
+    function detectBrand(row, title, map) {
+      const csvBrand = String(getField(row, brandFields) || "").trim();
+      const known = detectKnownPhrase(title, map);
+      const trustBrand = $("trustBrand").checked;
+      if (trustBrand && csvBrand) return csvBrand;
+      if (csvBrand && !falseBrandMap[csvBrand.toUpperCase()]) return csvBrand;
+      const brandLike = known.find((phrase) => /^[A-Za-z0-9 .'-]+$/.test(phrase));
+      if (brandLike) return properCase(brandLike);
+      const firstWords = normalizeTitle(title).split(/\s+/).filter(Boolean);
+      for (const word of firstWords.slice(0, 4)) {
+        const clean = word.replace(/[^A-Za-z0-9-]/g, "");
+        if (clean.length >= 3 && !stopWords.has(clean.toLowerCase()) && !/^\d+$/.test(clean)) return properCase(clean);
+      }
+      return "";
+    }
+
+    function rowMatchesQuery(title) {
+      const query = $("query").value.trim();
+      if (!$("requireQuery").checked || !query) return true;
+      return query.split(/[,\s]+/).filter(Boolean).some((q) => title.toLowerCase().includes(q.toLowerCase()));
+    }
+
+    function analyze() {
+      const map = userMap();
+      const minSold = numberValue($("minSold").value, 0);
+      state.usedRows = [];
+      state.ignoredRows = [];
+
+      state.rows.forEach((row, index) => {
+        const title = normalizeTitle(getField(row, titleFields));
+        const price = numberValue(getField(row, priceFields), 0);
+        const sold = Math.max(1, numberValue(getField(row, soldFields), 1));
+        const originalBrand = String(getField(row, brandFields) || "").trim();
+        const reasons = [];
+
+        if (!title) reasons.push("タイトル列が見つかりません");
+        if (sold < minSold) reasons.push("最低販売数未満");
+        if (title && !rowMatchesQuery(title)) reasons.push("検索語を含まないため除外");
+        if (originalBrand && falseBrandMap[originalBrand.toUpperCase()]) reasons.push(falseBrandMap[originalBrand.toUpperCase()]);
+
+        const brand = title ? detectBrand(row, title, map) : "";
+        const model = title ? extractModel(title, brand) : "";
+        const tokens = title ? extractTokens(title, map) : [];
+        const character = tokens.find((token) => /Pokemon|One Piece|Dragon Ball|Naruto|Demon Slayer|Jujutsu|Miku|Kitty|Gundam|Disney|[\u3040-\u30ff\u3400-\u9fff]/i.test(token)) || "";
+
+        const normalized = {
+          line: index + 2,
+          title,
+          brand,
+          model,
+          character,
+          keyword: keywordFromParts(brand, model, tokens),
+          keywordJp: "",
+          tokens,
+          price,
+          sold,
+          date: getField(row, dateFields),
+          originalBrand,
+          reasons
+        };
+        normalized.keywordJp = toJapanese(normalized.keyword, map);
+
+        if (reasons.some((r) => r.includes("除外") || r.includes("タイトル列") || r.includes("最低販売数"))) {
+          state.ignoredRows.push(normalized);
+        } else {
+          state.usedRows.push(normalized);
+          if (reasons.length) state.ignoredRows.push(normalized);
+        }
       });
 
-      state.ideas = ideas;
-      syncFromInputs();
-      save();
+      state.combo = aggregateCombo(state.usedRows, map);
+      state.brand = aggregateBrand(state.usedRows, map);
+      state.token = aggregateToken(state.usedRows, map);
+      updateMetrics();
       render();
+      setStatus();
     }
 
-    function syncFromInputs() {
-      state.seed = $("seed").value;
-      state.market = $("market").value;
-      state.language = $("language").value;
-      state.volume = Number($("volume").value) || 0;
-      state.difficulty = Number($("difficulty").value) || 0;
+    function keywordFromParts(brand, model, tokens) {
+      if ($("mergeBrandModel").checked && brand && model) return `${brand} ${model}`.trim();
+      return tokens[0] || [brand, model].filter(Boolean).join(" ");
     }
 
-    function save() {
-      localStorage.setItem(storeKey, JSON.stringify(state));
+    function aggregateCombo(rows, map) {
+      const grouped = new Map();
+      rows.forEach((row) => {
+        const keyword = row.keyword || row.tokens[0] || row.title;
+        const key = keyword.toLowerCase();
+        if (!grouped.has(key)) {
+          grouped.set(key, {
+            brand: row.brand,
+            model: row.model || row.character,
+            keyword,
+            keywordJp: toJapanese(keyword, map),
+            listingCount: 0,
+            soldCount: 0,
+            revenue: 0
+          });
+        }
+        const item = grouped.get(key);
+        item.listingCount += 1;
+        item.soldCount += row.sold;
+        item.revenue += row.price * row.sold;
+      });
+      return sortItems([...grouped.values()].map(addAvgPrice));
     }
 
-    function load() {
-      const saved = localStorage.getItem(storeKey);
-      if (!saved) return;
-      try {
-        Object.assign(state, JSON.parse(saved));
-      } catch {
+    function aggregateBrand(rows, map) {
+      const grouped = new Map();
+      rows.forEach((row) => {
+        const brand = row.brand || "Unknown";
+        const key = brand.toLowerCase();
+        if (!grouped.has(key)) {
+          grouped.set(key, {
+            keyword: brand,
+            keywordJp: toJapanese(brand, map),
+            listingCount: 0,
+            soldCount: 0,
+            revenue: 0
+          });
+        }
+        const item = grouped.get(key);
+        item.listingCount += 1;
+        item.soldCount += row.sold;
+        item.revenue += row.price * row.sold;
+      });
+      return sortItems([...grouped.values()].map(addAvgPrice));
+    }
+
+    function aggregateToken(rows, map) {
+      const grouped = new Map();
+      rows.forEach((row) => {
+        row.tokens.forEach((token) => {
+          const key = token.toLowerCase();
+          if (!grouped.has(key)) {
+            grouped.set(key, {
+              type: classifyToken(token),
+              keyword: token,
+              keywordJp: toJapanese(token, map),
+              listingCount: 0,
+              soldCount: 0,
+              revenue: 0
+            });
+          }
+          const item = grouped.get(key);
+          item.listingCount += 1;
+          item.soldCount += row.sold;
+          item.revenue += row.price * row.sold;
+        });
+      });
+      return sortItems([...grouped.values()].map(addAvgPrice));
+    }
+
+    function classifyToken(token) {
+      if (/Pokemon|One Piece|Dragon Ball|Naruto|Demon Slayer|Jujutsu|Miku|Kitty|Gundam|Disney|[\u3040-\u30ff\u3400-\u9fff]/i.test(token)) return "Character";
+      if (/\d/.test(token)) return "Model";
+      return "Brand";
+    }
+
+    function addAvgPrice(item) {
+      const avgPrice = item.soldCount ? item.revenue / item.soldCount : 0;
+      const demand = Math.min(50, item.soldCount * 8);
+      const price = Math.min(30, Math.log10(avgPrice + 1) * 12);
+      const confidence = Math.min(15, item.listingCount * 4);
+      const competitionPenalty = Math.max(0, item.listingCount - item.soldCount) * 2;
+      const score = Math.max(1, Math.min(100, Math.round(demand + price + confidence - competitionPenalty)));
+      const action = score >= 70 ? "仕入れ候補" : score >= 45 ? "要確認" : "優先低";
+      const actionClass = score >= 70 ? "buy" : score >= 45 ? "watch" : "skip";
+      return { ...item, avgPrice, score, action, actionClass };
+    }
+
+    function sortItems(items) {
+      const mode = $("sortMode").value;
+      return items.sort((a, b) => {
+        if (mode === "keyword") return String(a.keyword).localeCompare(String(b.keyword));
+        if (mode === "price") return b.avgPrice - a.avgPrice;
+        if (mode === "listing") return b.listingCount - a.listingCount;
+        return b.score - a.score || b.soldCount - a.soldCount || b.listingCount - a.listingCount;
+      });
+    }
+
+    function updateMetrics() {
+      $("rowCount").textContent = state.rows.length;
+      $("usedCount").textContent = state.usedRows.length;
+      $("ignoredCount").textContent = state.ignoredRows.length;
+      $("keywordCount").textContent = state.combo.length;
+      $("soldCount").textContent = state.usedRows.reduce((sum, row) => sum + row.sold, 0);
+    }
+
+    function setStatus() {
+      const warnings = state.ignoredRows.filter((row) => row.reasons.length).length;
+      const box = $("statusBox");
+      if (!state.rows.length) {
+        box.innerHTML = '<div class="status">CSVを取り込むと集計します。検索語を入れると、関係ない商品が混ざる事故を減らせます。</div>';
         return;
       }
-      $("seed").value = state.seed || "";
-      $("market").value = state.market || "eBay";
-      $("language").value = state.language || "English";
-      $("volume").value = state.volume ?? 50;
-      $("difficulty").value = state.difficulty ?? 35;
-    }
-
-    function filteredIdeas() {
-      const q = $("search").value.trim().toLowerCase();
-      const intent = $("intentFilter").value;
-      const sortBy = $("sortBy").value;
-      return [...state.ideas]
-        .filter((idea) => intent === "all" || idea.intent === intent)
-        .filter((idea) => !q || idea.keyword.toLowerCase().includes(q))
-        .sort((a, b) => {
-          if (sortBy === "keyword") return a.keyword.localeCompare(b.keyword);
-          return Number(b[sortBy]) - Number(a[sortBy]);
-        });
-    }
-
-    function updateIdea(id, field, value) {
-      const idea = state.ideas.find((item) => item.id === id);
-      if (!idea) return;
-      idea[field] = field === "volume" || field === "difficulty" ? Number(value) || 0 : value;
-      idea.score = calcPriority(idea.volume, idea.difficulty, idea.intent);
-      save();
-      render();
-    }
-
-    function removeIdea(id) {
-      state.ideas = state.ideas.filter((idea) => idea.id !== id);
-      save();
-      render();
+      box.innerHTML = `<div class="status ${warnings ? "warn" : ""}">${state.rows.length}行を読み込み、${state.usedRows.length}行を集計しました。${warnings ? `${warnings}件に除外または確認理由があります。` : "大きな警告はありません。"}</div>`;
     }
 
     function render() {
-      const ideas = filteredIdeas();
-      const total = state.ideas.length;
-      const high = state.ideas.filter((idea) => idea.score >= 70).length;
-      const avg = total ? Math.round(state.ideas.reduce((sum, idea) => sum + idea.score, 0) / total) : 0;
-      const buyers = state.ideas.filter((idea) => idea.intent === "Buy").length;
-      $("totalCount").textContent = total;
-      $("highCount").textContent = high;
-      $("avgScore").textContent = avg;
-      $("buyerCount").textContent = buyers;
+      const q = $("tableSearch").value.trim().toLowerCase();
+      const tab = state.activeTab;
+      const data = (tab === "combo" ? state.combo : tab === "brand" ? state.brand : tab === "token" ? state.token : tab === "rows" ? state.usedRows : state.ignoredRows)
+        .filter((row) => !q || JSON.stringify(row).toLowerCase().includes(q));
 
-      if (!ideas.length) {
-        tbody.innerHTML = '<tr><td class="empty" colspan="7">表示できる候補がありません。</td></tr>';
-        return;
-      }
-
-      tbody.innerHTML = ideas.map((idea) => `
-        <tr>
-          <td class="kw"><input value="${escapeHtml(idea.keyword)}" data-id="${idea.id}" data-field="keyword"></td>
-          <td class="intent"><span class="tag ${idea.intent.toLowerCase()}">${idea.intent}</span></td>
-          <td><input type="number" min="0" value="${idea.volume}" data-id="${idea.id}" data-field="volume"></td>
-          <td><input type="number" min="0" max="100" value="${idea.difficulty}" data-id="${idea.id}" data-field="difficulty"></td>
-          <td class="score">
-            <div class="priority"><strong>${idea.score}</strong><span class="bar" style="--w:${idea.score}%"><i></i></span></div>
-          </td>
-          <td class="notes"><input value="${escapeHtml(idea.notes)}" data-id="${idea.id}" data-field="notes"></td>
-          <td class="actions"><button class="btn icon" data-remove="${idea.id}" title="削除">×</button></td>
-        </tr>
-      `).join("");
+      if (tab === "combo") renderTable(["SCORE", "ACTION", "BRAND", "MODEL", "KEYWORD_EN", "KEYWORD_JP", "LISTING_COUNT", "SOLD_COUNT", "AVG_PRICE"], data, comboRow);
+      if (tab === "brand") renderTable(["KEYWORD", "KEYWORD_JP", "LISTING_COUNT", "SOLD_COUNT", "AVG_PRICE"], data, brandRow);
+      if (tab === "token") renderTable(["TYPE", "KEYWORD", "KEYWORD_JP", "LISTING_COUNT", "SOLD_COUNT", "AVG_PRICE"], data, tokenRow);
+      if (tab === "rows") renderTable(["LINE", "BRAND", "MODEL", "CHARACTER", "KEYWORD", "SOLD", "PRICE", "TITLE"], data, usedRow);
+      if (tab === "ignored") renderTable(["LINE", "REASON", "CSV_BRAND", "KEYWORD", "SOLD", "PRICE", "TITLE"], data, ignoredRow);
     }
 
-    function escapeHtml(text) {
-      return String(text).replace(/[&<>"']/g, (char) => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#039;"
+    function renderTable(headers, data, rowFn) {
+      $("thead").innerHTML = `<tr>${headers.map((h) => `<th>${h}</th>`).join("")}</tr>`;
+      $("tbody").innerHTML = data.length
+        ? data.map(rowFn).join("")
+        : `<tr><td class="empty" colspan="${headers.length}">表示できるデータがありません。</td></tr>`;
+    }
+
+    function money(value) {
+      return Number(value || 0).toLocaleString(undefined, { maximumFractionDigits: 2 });
+    }
+
+    function html(text) {
+      return String(text ?? "").replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
       })[char]);
     }
 
-    function exportCsv() {
-      const rows = [["Keyword", "Intent", "Volume", "Difficulty", "Priority", "Notes"]];
-      state.ideas.forEach((idea) => rows.push([idea.keyword, idea.intent, idea.volume, idea.difficulty, idea.score, idea.notes]));
-      const csv = rows.map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(",")).join("\n");
+    function comboRow(row) {
+      return `<tr><td>${row.score}</td><td><span class="tag ${row.actionClass}">${row.action}</span></td><td>${html(row.brand)}</td><td>${html(row.model)}</td><td>${html(row.keyword)}</td><td>${html(row.keywordJp)}</td><td>${row.listingCount}</td><td>${row.soldCount}</td><td>${money(row.avgPrice)}</td></tr>`;
+    }
+
+    function brandRow(row) {
+      return `<tr><td>${html(row.keyword)}</td><td>${html(row.keywordJp)}</td><td>${row.listingCount}</td><td>${row.soldCount}</td><td>${money(row.avgPrice)}</td></tr>`;
+    }
+
+    function tokenRow(row) {
+      return `<tr><td><span class="tag ${row.type.toLowerCase()}">${row.type}</span></td><td>${html(row.keyword)}</td><td>${html(row.keywordJp)}</td><td>${row.listingCount}</td><td>${row.soldCount}</td><td>${money(row.avgPrice)}</td></tr>`;
+    }
+
+    function usedRow(row) {
+      return `<tr><td>${row.line}</td><td>${html(row.brand)}</td><td>${html(row.model)}</td><td>${html(row.character)}</td><td>${html(row.keyword)}<br><span class="mono">${html(row.keywordJp)}</span></td><td>${row.sold}</td><td>${money(row.price)}</td><td>${html(row.title)}</td></tr>`;
+    }
+
+    function ignoredRow(row) {
+      return `<tr><td>${row.line}</td><td>${row.reasons.map((r) => `<span class="tag warn">${html(r)}</span>`).join(" ")}</td><td>${html(row.originalBrand)}</td><td>${html(row.keyword)}</td><td>${row.sold}</td><td>${money(row.price)}</td><td>${html(row.title)}</td></tr>`;
+    }
+
+    function exportCsv(rows, filename) {
+      const csv = rows.map((row) => row.map((cell) => `"${String(cell ?? "").replace(/"/g, '""')}"`).join(",")).join("\n");
       const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "keyword-research.csv";
+      a.download = filename;
       a.click();
       URL.revokeObjectURL(url);
     }
 
-    $("generate").addEventListener("click", makeIdeas);
-    $("exportCsv").addEventListener("click", exportCsv);
-    $("clearAll").addEventListener("click", () => {
-      if (!confirm("保存データを削除しますか？")) return;
-      state.ideas = [];
-      $("seed").value = "";
-      localStorage.removeItem(storeKey);
-      render();
-    });
-    $("loadSample").addEventListener("click", () => {
-      $("seed").value = "seiko vintage watch\ncitizen eco drive\ng shock limited";
-      $("volume").value = 70;
-      $("difficulty").value = 42;
-      makeIdeas();
-    });
-    ["seed", "market", "language", "volume", "difficulty"].forEach((id) => {
-      $(id).addEventListener("input", () => {
-        syncFromInputs();
-        save();
-      });
-    });
-    ["search", "intentFilter", "sortBy"].forEach((id) => $(id).addEventListener("input", render));
-    tbody.addEventListener("change", (event) => {
-      const target = event.target;
-      if (!target.dataset.id) return;
-      updateIdea(target.dataset.id, target.dataset.field, target.value);
-    });
-    tbody.addEventListener("click", (event) => {
-      const id = event.target.dataset.remove;
-      if (id) removeIdea(id);
+    function exportSummary() {
+      const rows = [["SCORE", "ACTION", "BRAND", "MODEL", "KEYWORD_EN", "KEYWORD_JP", "LISTING_COUNT", "SOLD_COUNT", "AVG_PRICE"]];
+      state.combo.forEach((row) => rows.push([row.score, row.action, row.brand, row.model, row.keyword, row.keywordJp, row.listingCount, row.soldCount, money(row.avgPrice)]));
+      exportCsv(rows, "ebay-keyword-summary.csv");
+    }
+
+    function exportRows() {
+      const rows = [["LINE", "BRAND", "MODEL", "CHARACTER", "KEYWORD", "KEYWORD_JP", "SOLD", "PRICE", "TITLE"]];
+      state.usedRows.forEach((row) => rows.push([row.line, row.brand, row.model, row.character, row.keyword, row.keywordJp, row.sold, row.price, row.title]));
+      exportCsv(rows, "ebay-keyword-rows.csv");
+    }
+
+    function loadSample() {
+      state.rows = parseCsv(`タイトル,価格,ブランド,カテゴリ,販売数,販売日
+SHURE M44-7 Cartridge Needle Turntable Japan,175.25,,Audio,6,2026-06-20
+Shure M44G DJ Cartridge Used Japan,755.09,,Audio,3,2026-06-18
+One Piece Magazine Vol.20 Japanese Anime Book,325,,Collectibles,3,2026-06-17
+Pokemon TAG 10 Card Japanese Promo,229.98,,Trading Card,2,2026-06-16
+Fujitsu ScanSnap iX500 Document Scanner FI-IX500 Japan,129.33,,Scanner,5,2026-06-15
+FCNT arrows Alpha F-51F 5G 512GB Unlocked Japan,748.88,ALPHA INDUSTRIES,Phone,1,2026-06-14
+MAMIKO TANAKA 2020BBM SHINING VENUS Shohei Ohtani Wife,100,大谷翔平,Card,1,2026-06-13`);
+      $("query").value = "";
+      analyze();
+    }
+
+    $("csvFile").addEventListener("change", async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+      const text = await file.text();
+      state.rows = parseCsv(text);
+      analyze();
     });
 
-    load();
+    ["query", "minSold", "sortMode", "requireQuery", "trustBrand", "mergeBrandModel", "customMap"].forEach((id) => {
+      $(id).addEventListener("input", analyze);
+      $(id).addEventListener("change", analyze);
+    });
+
+    $("tableSearch").addEventListener("input", render);
+    $("sampleBtn").addEventListener("click", loadSample);
+    $("exportSummaryBtn").addEventListener("click", exportSummary);
+    $("exportRowsBtn").addEventListener("click", exportRows);
+    $("clearBtn").addEventListener("click", () => {
+      state.rows = [];
+      state.usedRows = [];
+      state.ignoredRows = [];
+      state.combo = [];
+      state.brand = [];
+      state.token = [];
+      $("csvFile").value = "";
+      updateMetrics();
+      setStatus();
+      render();
+    });
+
+    document.querySelectorAll(".tab").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach((item) => item.classList.remove("active"));
+        tab.classList.add("active");
+        state.activeTab = tab.dataset.tab;
+        render();
+      });
+    });
+
+    updateMetrics();
+    setStatus();
     render();
   </script>
 </body>
